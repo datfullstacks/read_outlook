@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Đọc hòm thư Hotmail</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
+  </head>
+  <body>
+    <div class="container">
+      <h1>Đọc hòm thư</h1>
+
+      <form method="post">
+        <div class="options">
+          <label><input type="checkbox" name="use_graph_api" checked /> Graph API</label>
+          <label><input type="checkbox" name="use_oauth2" checked /> OAuth2</label>
+        </div>
+
+        <label for="accounts">Nhập Email</label>
+        <textarea
+          id="accounts"
+          name="accounts"
+          rows="8"
+          placeholder="email|password|refresh_token|client_id"
+        ></textarea>
+
+        <button type="submit">Đọc hòm thư</button>
+      </form>
+
+      {% if errors %}
+      <div class="panel error">
+        <h2>Lỗi</h2>
+        <ul>
+          {% for error in errors %}
+          <li>{{ error }}</li>
+          {% endfor %}
+        </ul>
+      </div>
+      {% endif %}
+
+      {% for result in results %}
+      <div class="panel">
+        <h2>{{ result.email }} ({{ result.message_count }} thư)</h2>
+        {% if result.messages %}
+        <ul class="messages">
+          {% for message in result.messages %}
+          <li>
+            <div><strong>Tiêu đề:</strong> {{ message.subject or '(Không có tiêu đề)' }}</div>
+            <div><strong>Từ:</strong> {{ message.from.emailAddress.address if message.from }}</div>
+            <div><strong>Nhận lúc:</strong> {{ message.receivedDateTime }}</div>
+            <div class="preview">{{ message.bodyPreview }}</div>
+          </li>
+          {% endfor %}
+        </ul>
+        {% else %}
+        <p>Không có thư để hiển thị.</p>
+        {% endif %}
+      </div>
+      {% endfor %}
+    </div>
+  </body>
+</html>
